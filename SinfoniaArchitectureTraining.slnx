@@ -1,5 +1,6 @@
 ﻿<Solution>
   <Project Path="Assembly-CSharp.csproj" />
   <Project Path="SymphonyFrameWork.Enum.csproj" />
+  <Project Path="InfraStructure.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
 </Solution>
