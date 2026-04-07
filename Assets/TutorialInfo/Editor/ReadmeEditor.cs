@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
 using System.IO;
 using UnityEngine.UIElements;
@@ -20,11 +20,11 @@ sealed class ReadmeEditor : Editor
             var readme = SelectReadme();
             SessionState.SetBool(k_ShowedReadmeSessionStateName, true);
 
-            if (readme && !readme.loadedLayout)
-            {
-                EditorUtility.LoadWindowLayout(Path.Combine(Application.dataPath, "TutorialInfo/Layout.wlt"));
-                readme.loadedLayout = true;
-            }
+                if (readme && !readme.loadedLayout)
+                {
+                    EditorUtility.LoadWindowLayout(Path.Combine(UnityEngine.Application.dataPath, "TutorialInfo/Layout.wlt"));
+                    readme.loadedLayout = true;
+                }
         }
     }
 
@@ -109,12 +109,12 @@ sealed class ReadmeEditor : Editor
             if (!string.IsNullOrEmpty(section.text))
                 part.Add(ChainWithClass(new Label(section.text), "section__body"));
 
-            if (!string.IsNullOrEmpty(section.linkText))
-            {
-                var link = ChainWithClass(new Label(section.linkText), "section__link");
-                link.RegisterCallback<ClickEvent>(evt => Application.OpenURL(section.url));
-                part.Add(link);
-            }
+                if (!string.IsNullOrEmpty(section.linkText))
+                {
+                    var link = ChainWithClass(new Label(section.linkText), "section__link");
+                    link.RegisterCallback<ClickEvent>(evt => UnityEngine.Application.OpenURL(section.url));
+                    part.Add(link);
+                }
 
             root.Add(part);
         }
