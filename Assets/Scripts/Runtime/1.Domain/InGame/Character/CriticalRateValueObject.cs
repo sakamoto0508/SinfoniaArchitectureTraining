@@ -1,19 +1,20 @@
-using UnityEngine;
+using System;
 
 namespace Domain
 {
-    public class CriticalRateValueObject : MonoBehaviour
+    public readonly struct CriticalRateValueObject
     {
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        /// <summary>
+        ///     クリティカル率を初期化するコンストラクタ。
+        /// </summary>
+        /// <param name="value"></param>
+        public CriticalRateValueObject(float value)
         {
-        
+            if (value < 0f)
+                throw new ArgumentOutOfRangeException(nameof(value), "CriticalRate must be non-negative.");
+            Value = value;
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
+        public float Value { get; }
     }
 }
