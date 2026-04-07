@@ -1,19 +1,17 @@
-using UnityEngine;
-
 namespace Domain
 {
-    public class AttacRangeValueObject : MonoBehaviour
+    public readonly struct AttackRangeValueObject
     {
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        /// <summary>
+        ///     攻撃範囲を初期化するコンストラクタ。
+        /// </summary>
+        /// <param name="value">攻撃範囲（0以上）。</param>
+        public AttackRangeValueObject(float value)
         {
-        
+            Value = value < 0f ? 0f : value;
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
+        /// <summary> 攻撃範囲。 </summary>
+        public readonly float Value;
     }
 }

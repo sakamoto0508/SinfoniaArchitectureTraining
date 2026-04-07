@@ -1,19 +1,19 @@
-using UnityEngine;
+using System;
 
 namespace Domain
 {
-    public class MoveSpeedValueObject : MonoBehaviour
+    public readonly struct MoveSpeedValueObject
     {
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        /// <summary>
+        ///     移動速度を初期化するコンストラクタ。
+        /// </summary>
+        /// <param name="value">移動速度（0以上）。</param>
+        public MoveSpeedValueObject(float value)
         {
-        
+            Value = value;
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
+        /// <summary> 移動速度。 </summary>
+        public readonly float Value;
     }
 }
