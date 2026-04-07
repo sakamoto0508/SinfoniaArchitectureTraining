@@ -11,9 +11,6 @@ namespace Domain
             MaxHealth = new(health);
         }
 
-        public HealthValueObject CurrentHealth { get; private set; }
-        public readonly HealthValueObject MaxHealth;
-
         /// <summary>
         ///     ダメージを適用する。
         /// </summary>
@@ -24,5 +21,8 @@ namespace Domain
             if (newHp < 0f) newHp = 0f;
             CurrentHealth = new HealthValueObject(newHp);
         }
+
+        public HealthValueObject CurrentHealth { get; private set; }
+        public readonly HealthValueObject MaxHealth;
     }
 }
