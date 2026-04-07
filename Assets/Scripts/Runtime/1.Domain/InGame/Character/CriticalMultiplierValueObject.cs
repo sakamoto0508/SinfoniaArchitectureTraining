@@ -1,19 +1,21 @@
-using UnityEngine;
+
+using System;
 
 namespace Domain
 {
-    public class CriticalMultiplierValueObject : MonoBehaviour
+    public readonly struct CriticalMultiplierValueObject
     {
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        /// <summary>
+        ///     クリティカル倍率を初期化するコンストラクタ。
+        /// </summary>
+        /// <param name="value"></param>
+        public CriticalMultiplierValueObject(float value)
         {
-        
+            if (value < 0f)
+                throw new ArgumentOutOfRangeException(nameof(value), "CriticalMultiplier must be non-negative.");
+            Value = value;
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
+        public float Value { get; }
     }
 }
