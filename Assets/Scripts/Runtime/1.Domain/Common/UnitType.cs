@@ -5,6 +5,7 @@ namespace Domain
     /// </summary>
     public enum UnitType
     {
+        Unknown = 0,
         Fighter,
         Archer,
         Warrior,
