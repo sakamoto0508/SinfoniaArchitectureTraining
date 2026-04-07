@@ -13,5 +13,16 @@ namespace Domain
 
         public HealthValueObject CurrentHealth { get; private set; }
         public readonly HealthValueObject MaxHealth;
+
+        /// <summary>
+        ///     ダメージを適用する。
+        /// </summary>
+        public void ApplyDamage(float damage)
+        {
+            if (damage <= 0f) return;
+            var newHp = CurrentHealth.Value - damage;
+            if (newHp < 0f) newHp = 0f;
+            CurrentHealth = new HealthValueObject(newHp);
+        }
     }
 }
