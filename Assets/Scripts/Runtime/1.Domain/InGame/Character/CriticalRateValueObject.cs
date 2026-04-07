@@ -15,6 +15,6 @@ namespace Domain
             Value = value;
         }
 
-        public float Value { get; }
+        public readonly float Value { get; }
     }
 }

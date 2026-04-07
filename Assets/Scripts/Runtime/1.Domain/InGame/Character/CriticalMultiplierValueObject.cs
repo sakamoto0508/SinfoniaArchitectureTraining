@@ -8,14 +8,15 @@ namespace Domain
         /// <summary>
         ///     クリティカル倍率を初期化するコンストラクタ。
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">クリティカル倍率（0以上）。</param>
         public CriticalMultiplierValueObject(float value)
         {
             if (value < 0f)
-                throw new ArgumentOutOfRangeException(nameof(value), "CriticalMultiplier must be non-negative.");
+                throw new ArgumentOutOfRangeException(nameof(value), "クリティカル倍率は0以上でなければなりません。");
             Value = value;
         }
 
-        public float Value { get; }
+        /// <summary> クリティカル倍率。 </summary>
+        public readonly float Value;
     }
 }

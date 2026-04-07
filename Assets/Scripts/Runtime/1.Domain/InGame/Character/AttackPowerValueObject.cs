@@ -1,5 +1,4 @@
 using System;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 
 namespace Domain
 {
@@ -16,6 +15,6 @@ namespace Domain
             Value = value;
         }
 
-        public float Value { get; }
+        public readonly float Value { get; }
     }
 }
