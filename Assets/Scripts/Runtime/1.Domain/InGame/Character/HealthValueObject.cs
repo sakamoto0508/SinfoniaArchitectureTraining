@@ -1,19 +1,20 @@
-using UnityEngine;
+using System;
 
 namespace Domain
 {
-    public class HealthValueObject : MonoBehaviour
+    public readonly struct HealthValueObject
     {
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        /// <summary>
+        ///     体力を初期化するコンストラクタ。
+        /// </summary>
+        /// <param name="value"></param>
+        public HealthValueObject(float value)
         {
-        
+            if (value < 0f)
+                throw new ArgumentOutOfRangeException(nameof(value), "Health must be non-negative.");
+            Value = value;
         }
 
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
+        public readonly float Value { get; }
     }
 }
