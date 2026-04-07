@@ -4,14 +4,15 @@ using Domain;
 namespace Application
 {
     /// <summary>
-    ///     ダメージ計算のユースケース実装。確率判定（クリティカル）は本クラスで行い、ドメインサービスへ委譲する。
+    ///     ダメージ計算のユースケース実装。クリティカル判定はドメイン側で行われるため、
+    ///     ドメイン向け乱数プロバイダをドメインサービスへ渡します。
     /// </summary>
     public sealed class DamageCalculationUseCase : IDamageCalculationUseCase
     {
         /// <summary> コンストラクタ。 </summary>
         /// <param name="random">乱数プロバイダ。</param>
         /// <param name="damageService">ダメージドメインサービス。</param>
-        public DamageCalculationUseCase(IRandomProvider random, IDamageDomainService damageService)
+        public DamageCalculationUseCase(Domain.IRandomProvider random, IDamageDomainService damageService)
         {
             _random = random ?? throw new ArgumentNullException(nameof(random));
             _damageService = damageService ?? throw new ArgumentNullException(nameof(damageService));
@@ -26,15 +27,11 @@ namespace Application
         /// <returns>ダメージ計算結果。</returns>
         public DamageResult Calculate(AttackerStats attacker, DefenderStats defender)
         {
-            // 乱数によるクリティカル判定（クリティカル率は 0〜1）
-            var roll = _random.NextDouble();
-            var isCritical = roll < attacker.CriticalRate;
-
-            // ドメインサービスに計算を委譲する
-            return _damageService.Calculate(attacker, defender, isCritical);
+            // ドメインサービスに計算を委譲する（クリティカル判定はドメイン内で行われる）
+            return _damageService.Calculate(attacker, defender, _random);
         }
 
-        private readonly IRandomProvider _random;
+        private readonly Domain.IRandomProvider _random;
         private readonly IDamageDomainService _damageService;
     }
 }

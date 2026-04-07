@@ -1,9 +1,9 @@
 using System;
 
-namespace Application
+namespace Domain
 {
     /// <summary>
-    ///     乱数生成を抽象化するインターフェース。
+    ///     乱数生成を抽象化するインターフェース（ドメイン内での確率判定に使用）。
     /// </summary>
     public interface IRandomProvider
     {
