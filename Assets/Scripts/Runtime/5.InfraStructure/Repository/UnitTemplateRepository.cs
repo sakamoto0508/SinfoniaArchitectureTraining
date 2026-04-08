@@ -90,9 +90,23 @@ namespace InfraStructure
                 return 0f;
             }
 
+            // UnitType を読み取る。CharacterAsset の CharacterName プロパティを想定しているが、存在しない場合は Unknown を返す。
+            Domain.UnitType ResolveUnitType()
+            {
+                var prop = type.GetProperty("CharacterName");
+                if (prop != null && prop.GetMethod != null)
+                {
+                    var val = prop.GetValue(asset);
+                    if (val is Domain.UnitType ut) return ut;
+                    // enum might be serialized as int
+                    if (val is int i) return (Domain.UnitType)i;
+                }
+                return Domain.UnitType.Unknown;
+            }
+
             return new UnitTemplate(
                 templateId: asset.name,
-                unitType: Domain.UnitType.Unknown,
+                unitType: ResolveUnitType(),
                 maxHealth: GetFloat("Health"),
                 attackPower: GetFloat("AttackPower"),
                 defense: GetFloat("Defence"),

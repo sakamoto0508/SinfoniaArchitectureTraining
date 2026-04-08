@@ -15,6 +15,7 @@ namespace Composition
         [SerializeField]
         [Tooltip("UnitTemplateRepository に渡す CharacterAsset (ScriptableObject) 配列。空の場合はリポジトリは空になります。")]
         private ScriptableObject[] _characterAssets = Array.Empty<ScriptableObject>();
+
         /// <summary> Awake で依存性を生成して CompositionRoot に注入します。 </summary>
         private void Awake()
         {
