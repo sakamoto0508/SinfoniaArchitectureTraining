@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: becb0d511e11cde4695b6d8f8e0ec5c9, type: 3}
   m_Name: Warrior
   m_EditorClassIdentifier: InfraStructure::InfraStructure.CharacterAsset
-  _characterName: 
-  _character: {fileID: 0}
-  _health: 0
-  _defence: 0
-  _moveSpeed: 0
-  _attackPower: 0
-  _attackRange: 0
-  _attackSpeed: 0
-  _criticalChance: 0
-  _criticalDamage: 0
+  _characterName: 3
+  _character: {fileID: 5318586915243414280, guid: 76b379c1a83450747918938319e53129, type: 3}
+  _health: 300
+  _defence: 50
+  _moveSpeed: 2
+  _attackPower: 5
+  _attackRange: 1
+  _attackSpeed: 1
+  _criticalChance: 10
+  _criticalDamage: 1.5

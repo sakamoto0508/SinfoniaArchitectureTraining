@@ -1,3 +1,4 @@
+using Domain;
 using UnityEngine;
 
 namespace InfraStructure
@@ -8,7 +9,7 @@ namespace InfraStructure
     [CreateAssetMenu(fileName = "NewCharacterAsset", menuName = "Character/Asset")]
     public class CharacterAsset : ScriptableObject
     {
-        public string CharacterName => _characterName;
+        public UnitType CharacterName => _characterName;
         public GameObject Character => _character;
         public float Health => _health;
         public float Defence => _defence;
@@ -19,7 +20,7 @@ namespace InfraStructure
         public float CriticalChance => _criticalChance;
         public float CriticalDamage => _criticalDamage;
 
-        [SerializeField] private string _characterName;
+        [SerializeField] private UnitType _characterName;
         [SerializeField] private GameObject _character;
         [SerializeField] private float _health;
         [SerializeField] private float _defence;
