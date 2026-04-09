@@ -4,19 +4,19 @@ using UnityEngine;
 namespace Application
 {
     /// <summary>
-    ///     ユニット移動に関するユースケースのインターフェース。
-    ///     Application 層に置くことで移動の高レベルな振る舞いを定義します。
+    ///     ユニット移動に関するユースケースのインターフェース（Application 層）。
+    ///     Adaptor 側がこのインターフェースを実装し、Controller はインターフェース経由で移動を依頼します。
     /// </summary>
     public interface IUnitMovementUseCase
     {
         /// <summary>
-        ///     指定ユニットを指定ターゲットの位置まで追従さ
-        ///     停止距離 stopRange に達したら移動を止める想定。
+        ///     指定ユニットを targetPosition に向かわせ、stopRange を到達判定に使います。
+        ///     moverId は CharacterEntity.Id を指定してください。
         /// </summary>
         void StartPursue(Guid moverId, Guid targetId, Vector3 targetPosition, float stopRange);
 
         /// <summary>
-        ///     指定ユニットの移動を停止する。
+        ///     指定ユニットの追従を停止します。
         /// </summary>
         void Stop(Guid moverId);
     }
