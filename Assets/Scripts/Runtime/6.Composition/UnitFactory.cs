@@ -1,6 +1,7 @@
 using System;
 using Domain;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace Composition
 {
@@ -21,7 +22,7 @@ namespace Composition
 
             return new CharacterEntity(Guid.NewGuid(), template.TemplateId,
                 template.MaxHealth, template.AttackPower, template.Defense,
-                template.CriticalRate, template.CriticalMultiplier);
+                template.CriticalRate, template.CriticalMultiplier, template.AttackRange);
         }
 
         /// <summary>
@@ -36,8 +37,23 @@ namespace Composition
             if (template == null) throw new ArgumentNullException(nameof(template));
             if (prefab == null) throw new ArgumentNullException(nameof(prefab));
 
-            var entity = CreateEntity(template);
+            var entity = new CharacterEntity(Guid.NewGuid(), template.TemplateId,
+                template.MaxHealth, template.AttackPower, template.Defense,
+                template.CriticalRate, template.CriticalMultiplier, template.AttackRange);
+            // keep CreateEntity for compatibility
             var go = UnityEngine.Object.Instantiate(prefab, position, Quaternion.identity);
+
+            try
+            {
+                var agentAtSpawn = go.GetComponent<NavMeshAgent>();
+                if (agentAtSpawn != null)
+                {
+                    try { agentAtSpawn.speed = template.MoveSpeed; } catch { }
+                    try { agentAtSpawn.stoppingDistance = template.AttackRange; } catch { }
+                }
+            }
+            catch { }
+
             var presenter = go.GetComponent<Adaptor.UnitPresenter>();
             if (presenter == null)
             {
@@ -46,6 +62,49 @@ namespace Composition
             }
 
             presenter.Bind(entity);
+            // inject MoveService if available
+            try
+            {
+                presenter.Init(Composition.CompositionRoot.MoveService);
+            }
+            catch { }
+
+            // NavMeshAgent があれば CompositionRoot の MoveService に登録
+            try
+            {
+                var agent = go.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                if (agent != null && Composition.CompositionRoot.MoveService != null)
+                {
+                    // CompositionRoot.MoveService は Application.IMoveService を想定
+                    // If MoveService exposes Register, call it. Otherwise, keep using Move as placeholder.
+                    try
+                    {
+                        // try to call Register via dynamic invocation to avoid compile-time dependency
+                        var moveSvc = Composition.CompositionRoot.MoveService;
+                        var registerMethod = moveSvc.GetType().GetMethod("Register");
+                        if (registerMethod != null)
+                        {
+                            registerMethod.Invoke(moveSvc, new object[] { entity.UnitId, agent });
+                        }
+                        else
+                        {
+                            moveSvc.Move(entity.UnitId, agent.transform.position);
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+
+            // UnitQueryService へ登録
+            try
+            {
+                var q = Composition.CompositionRoot.UnitQueryService;
+                var reg = q?.GetType().GetMethod("Register");
+                reg?.Invoke(q, new object[] { entity.UnitId });
+            }
+            catch { }
+
             return go;
         }
     }

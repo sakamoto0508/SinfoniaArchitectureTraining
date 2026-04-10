@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2714127359575820344}
   - component: {fileID: -3234778428898206734}
   - component: {fileID: -7878232624765227628}
+  - component: {fileID: -7997201765716273014}
   m_Layer: 0
   m_Name: Warrior
   m_TagString: Untagged
@@ -150,3 +151,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d674840c41e7274bbe43f9657c58168, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Adaptor::Adaptor.UnitPresenter
+--- !u!114 &-7997201765716273014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5318586915243414280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f11e902a2c23ee14f97b41782f430826, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: View::View.UnitView

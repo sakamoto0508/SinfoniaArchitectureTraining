@@ -1,45 +1,61 @@
-using System;
+using Application;
 using Domain;
+using System;
 using UnityEngine;
 
 namespace Adaptor
 {
     /// <summary>
-    ///     ユニットの表示・ビューを担当する Presenter。
-    ///     CharacterEntity を受け取り表示を更新します。
+    /// ユニットの表示・ビューを担当する Presenter (MonoBehaviour)。
+    /// CharacterEntity を受け取り表示を更新します。
     /// </summary>
     public sealed class UnitPresenter : MonoBehaviour
     {
+        private Application.IMoveService _moveService;
+
         /// <summary> バインドされた CharacterEntity。 </summary>
         public CharacterEntity Entity { get; private set; }
 
         /// <summary>
-        ///     CharacterEntity を受け取り表示を初期化します。
+        /// 外部から MoveService を注入します。Composition 層（Factory）で呼んでください。
+        /// </summary>
+        public void Init(Application.IMoveService moveService)
+        {
+            _moveService = moveService;
+        }
+
+        /// <summary>
+        /// CharacterEntity を受け取り表示を初期化します。
         /// </summary>
         public void Bind(CharacterEntity entity)
         {
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
-            // 表示名にテンプレート id をセットする
-            gameObject.name = $"Unit_{Entity.TemplateId}";
-            // 初回の表示更新
             UpdateView();
         }
 
         /// <summary>
-        ///     表示を更新します。必要に応じて Healthバーやエフェクトを更新してください。
+        /// 表示を更新します。必要に応じて Healthバーやエフェクトを更新してください。
         /// </summary>
         public void UpdateView()
         {
             if (Entity == null) return;
-            // 現状は GameObject 名に現在HP を反映する簡易実装
             var hp = (int)Entity.Health.CurrentHealth.Value;
-            gameObject.name = $"Unit_{Entity.TemplateId}_HP{hp}";
+            try
+            {
+                gameObject.name = $"{Entity.TemplateId} HP:{hp}";
+            }
+            catch { }
         }
 
-        //private void Update()
-        //{
-        //    // 毎フレーム表示を更新する（例示）。負荷が気になる場合はイベント駆動に変更してください。
-        //    UpdateView();
-        //}
+        public UnitPositionDTO Get(Guid id)
+        {
+            if (_moveService == null) return new UnitPositionDTO(Vector3.zero);
+            return new UnitPositionDTO(_moveService.GetPosition(id));
+        }
+
+        public void Update()
+        {
+            UpdateView();
+        }
     }
 }

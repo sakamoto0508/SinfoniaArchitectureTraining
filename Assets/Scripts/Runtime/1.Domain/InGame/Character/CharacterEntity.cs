@@ -9,9 +9,9 @@ namespace Domain
     public sealed class CharacterEntity
     {
         public CharacterEntity(Guid id, string templateId, float maxHealth,
-            float attackPower, float defense, float criticalRate, float criticalMultiplier)
+            float attackPower, float defense, float criticalRate, float criticalMultiplier, float attackRange)
         {
-            Id = id == Guid.Empty ? Guid.NewGuid() : id;
+            UnitId = id == Guid.Empty ? Guid.NewGuid() : id;
             TemplateId = templateId ?? string.Empty;
 
             Health = new HealthEntity(maxHealth);
@@ -20,9 +20,11 @@ namespace Domain
             _defense = defense;
             _criticalRate = new CriticalRateValueObject(criticalRate);
             _criticalMultiplier = new CriticalMultiplierValueObject(criticalMultiplier);
+            _attackRange = attackRange;
         }
 
-        public Guid Id { get; }
+        /// <summary>    キャラクターの一意な識別子。/// </summary>
+        public Guid UnitId { get; }
 
         /// <summary> テンプレートやアセットを指す識別子（表示名ではなく内部ID）。 </summary>
         public string TemplateId { get; }
@@ -49,6 +51,8 @@ namespace Domain
             return new AttackerStats(_attackPower.Value, _criticalRate.Value, _criticalMultiplier.Value);
         }
 
+        // AttackRange is exposed via the AttackRange property.
+
         /// <summary> 現在の状態から DefenderStats を作成します。 </summary>
         public DefenderStats ToDefenderStats()
         {
@@ -67,7 +71,11 @@ namespace Domain
 
         private readonly AttackPowerValueObject _attackPower;
         private readonly float _defense;
+        private readonly float _attackRange;
         private readonly CriticalRateValueObject _criticalRate;
         private readonly CriticalMultiplierValueObject _criticalMultiplier;
+
+        /// <summary> 攻撃射程（読み取り専用） </summary>
+        public float AttackRange => _attackRange;
     }
 }

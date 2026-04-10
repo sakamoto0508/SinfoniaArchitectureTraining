@@ -37,22 +37,37 @@ namespace Composition
         private Transform _enemyPosition = null;
 
         private readonly UnitFactory _factory = new UnitFactory();
+        [SerializeField, Tooltip("スポーンを遅延させる秒数。0 にすると遅延なし。")]
+        private float _spawnDelaySeconds = 0.5f;
 
-        /// <summary> Awake で自動的にスポーンします（Play 中の確認用）。 </summary>
-        private void Awake()
+        /// <summary> Start で自動的にスポーンします（若干遅延して初期化が安定するように調整）。 </summary>
+        private void Start()
+        {
+            StartCoroutine(DelayedSpawn());
+        }
+
+        private System.Collections.IEnumerator DelayedSpawn()
         {
             // UnitTemplateRepository の存在を確認
             var repo = Composition.CompositionRoot.UnitTemplateRepository;
             if (repo == null)
             {
                 Debug.LogError("UnitSpawner: CompositionRoot.UnitTemplateRepository が null です。CompositionInitializer の設定を確認してください。");
-                return;
+                yield break;
             }
 
-            // 味方を生成
-            SpawnGroup(_friendAsset, _friendCount, _friendPosition.position);
+            // 少し待つか、NavMesh が利用可能になるまで待機（どちらか早い方）。
+            var timer = 0f;
+            var timeout = Math.Max(0f, _spawnDelaySeconds);
+            var checkInterval = 0.05f;
+            while (timer < timeout)
+            {
+                yield return new WaitForSeconds(checkInterval);
+                timer += checkInterval;
+            }
 
-            // 敵を生成
+            // 友軍と敵の生成
+            SpawnGroup(_friendAsset, _friendCount, _friendPosition.position);
             SpawnGroup(_enemyAsset, _enemyCount, _enemyPosition.position);
         }
 
@@ -89,8 +104,92 @@ namespace Composition
                 var offset = new Vector3(i * 1.5f, 0f, 0f);
                 var position = basePosition + offset;
                 var go = _factory.Spawn(template, prefab, position);
-                // 必要ならここで派生する Controller や AI を追加し、UnitPresenter を取得して操作する。
                 var presenter = go.GetComponent<Adaptor.UnitPresenter>();
+                Domain.CharacterEntity entity = null;
+                if (presenter != null)
+                {
+                    entity = presenter.Entity;
+                }
+                // 所属情報をセット（味方/敵）。UnitController は Team コンポーネントを参照して行動します。
+                // ここではリフレクションでコンポーネントを追加して、アセンブリ間の型衝突を避ける。
+                Type FindType(string name)
+                {
+                    foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                    {
+                        var t = asm.GetType(name);
+                        if (t != null) return t;
+                    }
+                    return null;
+                }
+
+                // Team component: add Unity component if available
+                var teamType = FindType("Adaptor.Team");
+                Component teamComp = null;
+                if (teamType != null)
+                {
+                    teamComp = go.AddComponent(teamType);
+                    var f = teamType.GetField("IsEnemy");
+                    if (f != null)
+                    {
+                        f.SetValue(teamComp, asset == _enemyAsset);
+                    }
+                }
+
+                // Create Adaptor.UnitController (pure class) and wire to View.UnitView
+                Adaptor.UnitController controller = null;
+                try
+                {
+                    controller = new Adaptor.UnitController(Composition.CompositionRoot.ChaseUseCase);
+                }
+                catch { }
+
+                // If UnitView exists on prefab, initialize it with controller
+                try
+                {
+                    var view = go.GetComponent<View.UnitView>();
+                    if (view != null && controller != null && entity != null)
+                    {
+                        view.Init(entity.UnitId, controller);
+                    }
+                }
+                catch { }
+
+                // Register mapping in UnitRegistry since controller is not a MonoBehaviour
+                try
+                {
+                    if (entity != null) Adaptor.UnitRegistry.Register(entity.UnitId, go);
+                }
+                catch { }
+
+                // --- Spawn 時の単体パラメータをログ出力する ---
+                try
+                {
+                    // Asset 側のパラメータ
+                    var assetInfo = $"Asset(name={asset.name}, MoveSpeed={asset.MoveSpeed}, Health={asset.Health}, Defence={asset.Defence}, AttackPower={asset.AttackPower}, AttackRange={asset.AttackRange}, AttackSpeed={asset.AttackSpeed}, CriticalChance={asset.CriticalChance}, CriticalDamage={asset.CriticalDamage})";
+
+                    // Entity 側のパラメータ
+                    var entityInfo = entity != null
+                        ? $"Entity(id={entity.UnitId}, template={entity.TemplateId}, currentHP={entity.Health.CurrentHealth.Value})"
+                        : "Entity=null";
+
+                    // NavMeshAgent 情報があれば出す
+                    string agentInfo = "";
+                    try
+                    {
+                        var agent = go.GetComponent<UnityEngine.AI.NavMeshAgent>();
+                        if (agent != null)
+                        {
+                            agentInfo = $"NavMeshAgent(speed={agent.speed}, stoppingDistance={agent.stoppingDistance}, isOnNavMesh={agent.isOnNavMesh})";
+                        }
+                    }
+                    catch { }
+
+                    Debug.Log($"UnitSpawner: Spawned unit go={go.name} prefab={prefab.name} {entityInfo} {assetInfo} {agentInfo}");
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"UnitSpawner: Spawn ログ出力で例外: {ex.Message}");
+                }
             }
         }
     }

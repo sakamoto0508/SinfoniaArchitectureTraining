@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Domain;
 using UnityEngine;
+using InfraStructure;
 
 namespace InfraStructure
 {
@@ -13,9 +14,9 @@ namespace InfraStructure
     {
         /// <summary> コンストラクタ。ScriptableObject 配列を受け取りリポジトリを初期化します。 </summary>
         /// <param name="characterAssets">CharacterAsset 相当の ScriptableObject 配列。</param>
-        public UnitTemplateRepository(ScriptableObject[] characterAssets)
+        public UnitTemplateRepository(CharacterAsset[] characterAssets)
         {
-            _characterAssets = characterAssets ?? Array.Empty<ScriptableObject>();
+            _characterAssets = characterAssets;
         }
 
         /// <summary>
@@ -64,19 +65,26 @@ namespace InfraStructure
         }
 
         /// <summary> 内部で保持する ScriptableObject 配列。 </summary>
-        private ScriptableObject[] _characterAssets = Array.Empty<ScriptableObject>();
-
-        /// <summary>
-        ///     初期化メソッド。必要に応じてアセット配列を差し替えることができます（互換用）。
-        /// </summary>
-        public void Initialize(ScriptableObject[] characterAssets)
-        {
-            _characterAssets = characterAssets ?? Array.Empty<ScriptableObject>();
-        }
+        private CharacterAsset[] _characterAssets = Array.Empty<CharacterAsset>();
 
         private static UnitTemplate Map(ScriptableObject asset)
         {
-            // ScriptableObject のリフレクションでプロパティを読み取る（CharacterAsset に依存しない）
+            if (asset is CharacterAsset ca)
+            {
+                return new UnitTemplate(
+                    templateId: asset.name,
+                    unitType: ca.CharacterName,
+                    maxHealth: ca.Health,
+                    moveSpeed: ca.MoveSpeed,
+                    attackPower: ca.AttackPower,
+                    attackRange: ca.AttackRange,
+                    defense: ca.Defence,
+                    criticalRate: ca.CriticalChance,
+                    criticalMultiplier: ca.CriticalDamage
+                );
+            }
+
+            // フォールバック: 非期待型の場合は既存のリフレクションベースの読み取りを使う
             var type = asset.GetType();
             float GetFloat(string propName)
             {
@@ -86,11 +94,9 @@ namespace InfraStructure
                     var val = prop.GetValue(asset);
                     if (val is float f) return f;
                 }
-                // プロパティが見つからなかった場合は 0 を返す
                 return 0f;
             }
 
-            // UnitType を読み取る。CharacterAsset の CharacterName プロパティを想定しているが、存在しない場合は Unknown を返す。
             Domain.UnitType ResolveUnitType()
             {
                 var prop = type.GetProperty("CharacterName");
@@ -98,7 +104,6 @@ namespace InfraStructure
                 {
                     var val = prop.GetValue(asset);
                     if (val is Domain.UnitType ut) return ut;
-                    // enum might be serialized as int
                     if (val is int i) return (Domain.UnitType)i;
                 }
                 return Domain.UnitType.Unknown;
@@ -108,7 +113,9 @@ namespace InfraStructure
                 templateId: asset.name,
                 unitType: ResolveUnitType(),
                 maxHealth: GetFloat("Health"),
+                moveSpeed: GetFloat("MoveSpeed"),
                 attackPower: GetFloat("AttackPower"),
+                attackRange: GetFloat("AttackRange"),
                 defense: GetFloat("Defence"),
                 criticalRate: GetFloat("CriticalChance"),
                 criticalMultiplier: GetFloat("CriticalDamage")

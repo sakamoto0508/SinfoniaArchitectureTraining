@@ -30,5 +30,13 @@ namespace Composition
             DamageDomainService = damageDomainService ?? throw new ArgumentNullException(nameof(damageDomainService));
             UnitTemplateRepository = unitTemplateRepository ?? throw new ArgumentNullException(nameof(unitTemplateRepository));
         }
+
+        // Movement 系サービスと UseCase（CompositionInitializer で設定される）
+        public static Application.IMoveService MoveService;
+        public static Application.IUnitQueryService UnitQueryService;
+        public static Application.FindNearestAndChaseUseCase ChaseUseCase;
+
+        // UnitMovementUseCase は廃止しました。Adaptor 側の MovementAdapter を直接利用します。
     }
+
 }

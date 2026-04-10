@@ -1,6 +1,7 @@
 using System;
 using Domain;
 using UnityEngine;
+using InfraStructure;
 
 namespace Composition
 {
@@ -12,38 +13,18 @@ namespace Composition
     {
         /// <summary>
         ///     ScriptableObject 配列から IUnitTemplateRepository を生成して返す。
+        ///     Inspector から渡される ScriptableObject[] を受け取り、CharacterAsset に変換して Repo を生成します。
         /// </summary>
         public IUnitTemplateRepository Create(ScriptableObject[] characterAssets)
         {
-            var assets = characterAssets ?? System.Array.Empty<ScriptableObject>();
-
-            // InfraStructure アセンブリへのコンパイル時参照を避けるため、リフレクションで生成を試みる。
-            var typeName = "InfraStructure.UnitTemplateRepository, InfraStructure";
-            var type = Type.GetType(typeName);
-            if (type == null)
+            var assets = characterAssets ?? Array.Empty<ScriptableObject>();
+            // filter and cast to CharacterAsset where possible
+            var caList = new System.Collections.Generic.List<CharacterAsset>();
+            foreach (var a in assets)
             {
-                // InfraStructure 側の型が見つからない場合。
-                Debug.LogError($"UnitTemplateRepositoryFactory: 型が見つかりません。 type={typeName}。InfraStructure アセンブリが存在しコンパイル済みか確認してください。");
-                throw new InvalidOperationException($"UnitTemplateRepositoryFactory: 型が見つかりません。 type={typeName}");
+                if (a is CharacterAsset ca) caList.Add(ca);
             }
-
-            try
-            {
-                var instance = Activator.CreateInstance(type, new object[] { assets });
-                if (instance is IUnitTemplateRepository repo)
-                {
-                    return repo;
-                }
-
-                // 生成したオブジェクトが期待するインターフェースを実装していない場合。
-                Debug.LogError($"UnitTemplateRepositoryFactory: 生成したインスタンスが IUnitTemplateRepository を実装していません。 type={type.FullName}");
-                throw new InvalidOperationException($"UnitTemplateRepositoryFactory: 生成したインスタンスが IUnitTemplateRepository を実装していません。 type={type.FullName}");
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"UnitTemplateRepositoryFactory: リフレクションによる生成に失敗しました。 type={typeName} エラー: {ex}");
-                throw;
-            }
-        }   
+            return new UnitTemplateRepository(caList.ToArray());
+        }
     }
 }
