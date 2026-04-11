@@ -122,7 +122,6 @@ namespace Composition
                     return null;
                 }
 
-                // Team component: add Unity component if available
                 var teamType = FindType("Adaptor.Team");
                 Component teamComp = null;
                 if (teamType != null)
@@ -135,7 +134,7 @@ namespace Composition
                     }
                 }
 
-                // Create Adaptor.UnitController (pure class) and wire to View.UnitView
+                // Adaptor.UnitController（純粋クラス）を生成し View.UnitView と紐付ける。
                 Adaptor.UnitController controller = null;
                 try
                 {
@@ -143,7 +142,7 @@ namespace Composition
                 }
                 catch { }
 
-                // If UnitView exists on prefab, initialize it with controller
+                // Prefab 上に UnitView があればコントローラで初期化する。
                 try
                 {
                     var view = go.GetComponent<View.UnitView>();
@@ -154,7 +153,7 @@ namespace Composition
                 }
                 catch { }
 
-                // Register mapping in UnitRegistry since controller is not a MonoBehaviour
+                // コントローラは MonoBehaviour ではないため、UnitRegistry にマッピングを登録する。
                 try
                 {
                     if (entity != null) Adaptor.UnitRegistry.Register(entity.UnitId, go);

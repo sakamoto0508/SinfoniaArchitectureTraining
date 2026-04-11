@@ -38,12 +38,10 @@ namespace Application
             if (distance <= stopRange)
             {
                 _moveService.Stop(selfId);
-                Debug.Log($"FindNearestAndChaseUseCase: Stop {selfId} (target {nearest}) dist={distance} stopRange={stopRange}");
             }
             else
             {
                 _moveService.Move(selfId, targetPos);
-                Debug.Log($"FindNearestAndChaseUseCase: Move {selfId} -> {nearest} pos={targetPos} dist={distance}");
             }
         }
     }

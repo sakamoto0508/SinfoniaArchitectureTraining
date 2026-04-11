@@ -7,7 +7,7 @@ namespace Domain
         /// <summary>
         ///     クリティカル率を初期化するコンストラクタ。
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">クリティカル発生率（0〜1）。</param>
         public CriticalRateValueObject(float value)
         {
             if (value < 0f)
@@ -15,6 +15,7 @@ namespace Domain
             Value = value;
         }
 
+        /// <summary> クリティカル発生率（0〜1）。 </summary>
         public readonly float Value { get; }
     }
 }

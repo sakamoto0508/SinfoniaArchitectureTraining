@@ -12,18 +12,21 @@ namespace Adaptor
     {
         private static readonly Dictionary<Guid, GameObject> _map = new();
 
+        /// <summary> 指定の ID と GameObject をレジストリに登録する。 </summary>
         public static void Register(Guid id, GameObject go)
         {
             if (id == Guid.Empty || go == null) return;
             _map[id] = go;
         }
 
+        /// <summary> 指定の ID の登録を解除する。 </summary>
         public static void Unregister(Guid id)
         {
             if (id == Guid.Empty) return;
             _map.Remove(id);
         }
 
+        /// <summary> 指定 ID に紐づく GameObject を取得できるか試みる。 </summary>
         public static bool TryGet(Guid id, out GameObject go)
         {
             if (id == Guid.Empty)

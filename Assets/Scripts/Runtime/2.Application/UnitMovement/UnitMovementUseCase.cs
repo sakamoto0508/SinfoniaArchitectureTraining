@@ -10,7 +10,7 @@ namespace Application
         /// コンストラクタ。
         /// IMoveService を注入して移動処理を外部に委譲します。
         /// </summary>
-        /// <param name="moveUseCase">移動処理を実装したサービス。</param>
+        /// <param name="moveService">移動処理を実装したサービス。</param>
         /// <param name="unitQueryService">ユニット情報を取得するサービス。</param>
         public UnitMovementUseCase(IMoveService moveService, IUnitQueryService unitQueryService)
         {

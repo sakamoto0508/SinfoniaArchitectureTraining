@@ -7,7 +7,7 @@ namespace Domain
         /// <summary>
         ///     体力を初期化するコンストラクタ。
         /// </summary>
-        /// <param name="value"></param>
+        /// <param name="value">体力の値（0以上）。</param>
         public HealthValueObject(float value)
         {
             if (value < 0f)
@@ -15,6 +15,7 @@ namespace Domain
             Value = value;
         }
 
+        /// <summary> 体力の値。 </summary>
         public readonly float Value { get; }
     }
 }

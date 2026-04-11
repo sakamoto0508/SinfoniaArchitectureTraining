@@ -23,7 +23,7 @@ namespace Domain
             _attackRange = attackRange;
         }
 
-        /// <summary>    キャラクターの一意な識別子。/// </summary>
+        /// <summary> キャラクターの一意な識別子。 </summary>
         public Guid UnitId { get; }
 
         /// <summary> テンプレートやアセットを指す識別子（表示名ではなく内部ID）。 </summary>
@@ -51,7 +51,7 @@ namespace Domain
             return new AttackerStats(_attackPower.Value, _criticalRate.Value, _criticalMultiplier.Value);
         }
 
-        // AttackRange is exposed via the AttackRange property.
+        // 攻撃射程は AttackRange プロパティで公開します。
 
         /// <summary> 現在の状態から DefenderStats を作成します。 </summary>
         public DefenderStats ToDefenderStats()
