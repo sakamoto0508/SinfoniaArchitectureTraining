@@ -182,7 +182,7 @@ MonoBehaviour:
   _friendCount: 1
   _friendAsset: {fileID: 11400000, guid: 21d11e3f627ed96448e7a49ea1c3c9d1, type: 2}
   _enemyCount: 1
-  _enemyAsset: {fileID: 11400000, guid: 345e777313dfdc64d9bd62f235f64ba2, type: 2}
+  _enemyAsset: {fileID: 11400000, guid: 21d11e3f627ed96448e7a49ea1c3c9d1, type: 2}
   _friendPosition: {fileID: 357834015}
   _enemyPosition: {fileID: 939247207}
   _spawnDelaySeconds: 1

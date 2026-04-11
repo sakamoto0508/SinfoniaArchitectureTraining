@@ -19,24 +19,24 @@ namespace InfraStructure
             {
                 try
                 {
-                    // Ensure agent is on NavMesh before calling SetDestination
+                    // SetDestination を呼ぶ前にエージェントが NavMesh 上にあるか確認する
                     if (!agent.isOnNavMesh)
                     {
-                        // Try to place agent onto nearest NavMesh position
+                        // 近傍の NavMesh 位置を探索して見つかれば Warp して配置する
                         NavMeshHit hit;
-                        // First try near agent current position
+                        // まずはエージェントの現在位置周辺を試す
                         if (NavMesh.SamplePosition(agent.transform.position, out hit, 2.0f, NavMesh.AllAreas))
                         {
                             agent.Warp(hit.position);
                         }
                         else if (NavMesh.SamplePosition(position, out hit, 2.0f, NavMesh.AllAreas))
                         {
-                            // fallback: warp to near target position
+                            // フォールバック: 目標位置近傍に NavMesh があればそちらに Warp する
                             agent.Warp(hit.position);
                         }
                         else
                         {
-                            UnityEngine.Debug.LogWarning($"NavMeshMoveService.Move: Agent for id={id} is not on a NavMesh and no nearby NavMesh position found. Skipping Move.");
+                            UnityEngine.Debug.LogWarning($"NavMeshMoveService.Move: id={id} のエージェントは NavMesh 上に存在せず、近傍にも NavMesh が見つかりませんでした。Move をスキップします。");
                             return;
                         }
                     }
@@ -45,7 +45,7 @@ namespace InfraStructure
                 }
                 catch (System.Exception ex)
                 {
-                    UnityEngine.Debug.LogWarning($"NavMeshMoveService.Move: Exception when moving agent id={id}: {ex.Message}");
+                    UnityEngine.Debug.LogWarning($"NavMeshMoveService.Move: エージェント id={id} の移動処理中に例外が発生しました: {ex.Message}");
                 }
             }
         }

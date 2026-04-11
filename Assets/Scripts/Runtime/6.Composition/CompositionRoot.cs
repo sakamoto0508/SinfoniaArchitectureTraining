@@ -35,8 +35,6 @@ namespace Composition
         public static Application.IMoveService MoveService;
         public static Application.IUnitQueryService UnitQueryService;
         public static Application.FindNearestAndChaseUseCase ChaseUseCase;
-
-        // UnitMovementUseCase は廃止しました。Adaptor 側の MovementAdapter を直接利用します。
     }
 
 }

@@ -21,7 +21,6 @@ namespace View
 
         void Update()
         {
-            //後で、Unitの攻撃範囲内に敵がいるかを判定して、攻撃するかどうかを決めるようにします。
             _controller.Update(_id, _targetId, _attackRange);
         }
     }

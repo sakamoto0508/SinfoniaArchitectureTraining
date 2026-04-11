@@ -40,7 +40,7 @@ namespace Composition
             var entity = new CharacterEntity(Guid.NewGuid(), template.TemplateId,
                 template.MaxHealth, template.AttackPower, template.Defense,
                 template.CriticalRate, template.CriticalMultiplier, template.AttackRange);
-            // keep CreateEntity for compatibility
+            // 互換性維持のため CreateEntity を残す。
             var go = UnityEngine.Object.Instantiate(prefab, position, Quaternion.identity);
 
             try
@@ -54,20 +54,8 @@ namespace Composition
             }
             catch { }
 
-            var presenter = go.GetComponent<Adaptor.UnitPresenter>();
-            if (presenter == null)
-            {
-                // 自動で追加してバインドする
-                presenter = go.AddComponent<Adaptor.UnitPresenter>();
-            }
-
-            presenter.Bind(entity);
-            // inject MoveService if available
-            try
-            {
-                presenter.Init(Composition.CompositionRoot.MoveService);
-            }
-            catch { }
+            var presenterInstance = new Adaptor.UnitPresenter(CompositionRoot.MoveService);
+            presenterInstance.Bind(entity);
 
             // NavMeshAgent があれば CompositionRoot の MoveService に登録
             try
@@ -75,15 +63,14 @@ namespace Composition
                 var agent = go.GetComponent<UnityEngine.AI.NavMeshAgent>();
                 if (agent != null && Composition.CompositionRoot.MoveService != null)
                 {
-                    // CompositionRoot.MoveService は Application.IMoveService を想定
-                    // If MoveService exposes Register, call it. Otherwise, keep using Move as placeholder.
+                    // MoveService に Register メソッドがあれば呼び出し、なければ Move を使う。
                     try
                     {
-                        // try to call Register via dynamic invocation to avoid compile-time dependency
                         var moveSvc = Composition.CompositionRoot.MoveService;
                         var registerMethod = moveSvc.GetType().GetMethod("Register");
                         if (registerMethod != null)
                         {
+                            // Register(Guid, NavMeshAgent) メソッドがあればそちらを呼び出す。
                             registerMethod.Invoke(moveSvc, new object[] { entity.UnitId, agent });
                         }
                         else
@@ -96,11 +83,12 @@ namespace Composition
             }
             catch { }
 
-            // UnitQueryService へ登録
+            // UnitQueryService へ登録。
             try
             {
                 var q = Composition.CompositionRoot.UnitQueryService;
                 var reg = q?.GetType().GetMethod("Register");
+                // UnitQueryService に Register(Guid) メソッドがあれば呼び出し、なければ無視する。
                 reg?.Invoke(q, new object[] { entity.UnitId });
             }
             catch { }

@@ -6,18 +6,26 @@ using UnityEngine;
 namespace Adaptor
 {
     /// <summary>
-    /// ユニットの表示・ビューを担当する Presenter (MonoBehaviour)。
-    /// CharacterEntity を受け取り表示を更新します。
+    /// ユニットの表示ロジックを担うプレゼンター（Adaptor 層、純粋クラス）。
+    /// View はこのクラスのメソッドを呼んで表示を更新してください。
     /// </summary>
-    public sealed class UnitPresenter : MonoBehaviour
+    public sealed class UnitPresenter
     {
         private Application.IMoveService _moveService;
 
-        /// <summary> バインドされた CharacterEntity。 </summary>
+        /// <summary> バインドされた CharacterEntity（読み取り専用） </summary>
         public CharacterEntity Entity { get; private set; }
 
         /// <summary>
-        /// 外部から MoveService を注入します。Composition 層（Factory）で呼んでください。
+        /// コンストラクタ。必要であれば Init でサービスを注入してください。
+        /// </summary>
+        public UnitPresenter(IMoveService moveService)
+        {
+            _moveService = moveService;
+        }
+
+        /// <summary>
+        /// MoveService を注入します。
         /// </summary>
         public void Init(Application.IMoveService moveService)
         {
@@ -25,37 +33,30 @@ namespace Adaptor
         }
 
         /// <summary>
-        /// CharacterEntity を受け取り表示を初期化します。
+        /// CharacterEntity をバインドします。
         /// </summary>
         public void Bind(CharacterEntity entity)
         {
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
-            UpdateView();
         }
 
         /// <summary>
-        /// 表示を更新します。必要に応じて Healthバーやエフェクトを更新してください。
+        /// 表示用の文字列を取得します（例: 名前や HP を含む）。
         /// </summary>
-        public void UpdateView()
+        public string GetDisplayName()
         {
-            if (Entity == null) return;
+            if (Entity == null) return string.Empty;
             var hp = (int)Entity.Health.CurrentHealth.Value;
-            try
-            {
-                gameObject.name = $"{Entity.TemplateId} HP:{hp}";
-            }
-            catch { }
+            return $"{Entity.TemplateId} HP:{hp}";
         }
 
-        public UnitPositionDTO Get(Guid id)
+        /// <summary>
+        /// 指定したユニットの位置を取得します。
+        /// </summary>
+        public UnitPositionDTO GetPosition(Guid id)
         {
             if (_moveService == null) return new UnitPositionDTO(Vector3.zero);
             return new UnitPositionDTO(_moveService.GetPosition(id));
-        }
-
-        public void Update()
-        {
-            UpdateView();
         }
     }
 }

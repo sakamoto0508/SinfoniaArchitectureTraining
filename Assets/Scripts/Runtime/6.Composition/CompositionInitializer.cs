@@ -30,7 +30,7 @@ namespace Composition
 
             // UnitTemplateRepository を Factory で生成して初期化する。
             var factory = new UnitTemplateRepositoryFactory();
-            // pass ScriptableObject[] directly; casting to CharacterAsset[] with 'as' returns null
+            // ScriptableObject 配列を渡してリポジトリを生成。
             var unitRepo = factory.Create(_characterAssets);
 
             // CompositionRoot に注入して共有ユースケースを初期化。

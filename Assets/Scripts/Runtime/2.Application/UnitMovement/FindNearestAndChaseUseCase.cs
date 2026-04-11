@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using UnityEngine;
-// Note: reference Application types with full qualification to avoid compile-order issues
+// コンパイル順序の問題を避けるため、Application 型は完全修飾で参照しています。
 namespace Application
 {
     /// <summary>
