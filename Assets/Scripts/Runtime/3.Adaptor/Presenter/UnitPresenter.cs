@@ -9,7 +9,7 @@ namespace Adaptor
     /// ユニットの表示ロジックを担うプレゼンター（Adaptor 層、純粋クラス）。
     /// View はこのクラスのメソッドを呼んで表示を更新してください。
     /// </summary>
-    public sealed class UnitPresenter
+    public sealed class UnitPresenter : MonoBehaviour
     {
         private Application.IMoveService _moveService;
 
@@ -17,15 +17,7 @@ namespace Adaptor
         public CharacterEntity Entity { get; private set; }
 
         /// <summary>
-        /// コンストラクタ。必要であれば Init でサービスを注入してください。
-        /// </summary>
-        public UnitPresenter(IMoveService moveService)
-        {
-            _moveService = moveService;
-        }
-
-        /// <summary>
-        /// MoveService を注入します。
+        /// MonoBehaviour 化したため、初期化は Init で行います。
         /// </summary>
         public void Init(Application.IMoveService moveService)
         {

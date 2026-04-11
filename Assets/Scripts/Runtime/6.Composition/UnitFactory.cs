@@ -54,8 +54,20 @@ namespace Composition
             }
             catch { }
 
-            var presenterInstance = new Adaptor.UnitPresenter(CompositionRoot.MoveService);
-            presenterInstance.Bind(entity);
+            // Attach or find a UnitPresenter component on the spawned GameObject and bind the entity
+            Adaptor.UnitPresenter presenterComponent = null;
+            try
+            {
+                presenterComponent = go.GetComponent<Adaptor.UnitPresenter>();
+                if (presenterComponent == null)
+                {
+                    presenterComponent = go.AddComponent<Adaptor.UnitPresenter>();
+                }
+
+                presenterComponent.Init(Composition.CompositionRoot.MoveService);
+                presenterComponent.Bind(entity);
+            }
+            catch { }
 
             // NavMeshAgent があれば CompositionRoot の MoveService に登録
             try
