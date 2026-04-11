@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 namespace View
 {
+    using Adaptor;
     public class UnitView : MonoBehaviour
     {
         /// <summary> この View を制御するコントローラ。 </summary>
@@ -13,6 +14,7 @@ namespace View
         private Guid _id;
         private Guid _targetId;
         private float _attackRange;
+        private View.UnitPresenterBehaviour _presenterBehaviour;
 
         /// <summary>
         ///     初期化。ユニットIDとコントローラを設定する。
@@ -24,11 +26,33 @@ namespace View
         }
 
         /// <summary>
+        ///     MonoBehaviour ラッパーを受け取ってバインドします。
+        /// </summary>
+        public void SetPresenterBehaviour(View.UnitPresenterBehaviour behaviour)
+        {
+            _presenterBehaviour = behaviour;
+            UpdateDisplay();
+        }
+
+        private void UpdateDisplay()
+        {
+            try
+            {
+                if (_presenterBehaviour != null)
+                {
+                    gameObject.name = _presenterBehaviour.GetDisplayName();
+                }
+            }
+            catch { }
+        }
+
+        /// <summary>
         ///     毎フレーム呼び出される更新処理で、コントローラの Update を呼び出す。
         /// </summary>
         void Update()
         {
-            _controller.Update(_id, _targetId, _attackRange);
+            _controller?.Update(_id, _targetId, _attackRange);
+            UpdateDisplay();
         }
     }
 }

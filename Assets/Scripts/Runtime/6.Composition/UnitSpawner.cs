@@ -104,11 +104,16 @@ namespace Composition
                 var offset = new Vector3(i * 1.5f, 0f, 0f);
                 var position = basePosition + offset;
                 var go = _factory.Spawn(template, prefab, position);
-                var presenter = go.GetComponent<Adaptor.UnitPresenter>();
+                var presenterWrapper = go.GetComponent<View.UnitPresenterBehaviour>();
                 Domain.CharacterEntity entity = null;
-                if (presenter != null)
+                if (presenterWrapper != null)
                 {
-                    entity = presenter.Entity;
+                    // View 層のラッパーは object を返すためキャストして取得する
+                    try
+                    {
+                        entity = presenterWrapper.Entity as Domain.CharacterEntity;
+                    }
+                    catch { entity = null; }
                 }
                 // 所属情報をセット（味方/敵）。UnitController は Team コンポーネントを参照して行動します。
                 // ここではリフレクションでコンポーネントを追加して、アセンブリ間の型衝突を避ける。

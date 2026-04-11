@@ -54,8 +54,19 @@ namespace Composition
             }
             catch { }
 
-            var presenterInstance = new Adaptor.UnitPresenter(CompositionRoot.MoveService);
-            presenterInstance.Bind(entity);
+            // UnitPresenter は純粋クラスのため、GameObject 上では MonoBehaviour ラッパーを使って紐付ける。
+            try
+            {
+                var wrapper = go.GetComponent<View.UnitPresenterBehaviour>();
+                if (wrapper == null)
+                {
+                    wrapper = go.AddComponent<View.UnitPresenterBehaviour>();
+                }
+
+                // MonoBehaviour ラッパーには Entity と MoveService を渡して初期化する
+                wrapper.Initialize(entity, Composition.CompositionRoot.MoveService);
+            }
+            catch { }
 
             // NavMeshAgent があれば CompositionRoot の MoveService に登録
             try
